@@ -1,0 +1,191 @@
+#include <algorithm>
+#include <cstdlib>
+#include <ctime>
+#include <iostream>
+#include <string>
+#include <vector>
+#define MAX_ATTEMPTS 6
+#define UNDERLINE "\033[4m"
+#define RESET "\033[0m"
+using namespace std;
+
+
+class hangman_game {
+public:
+	hangman_game() {
+		srand (static_cast<unsigned int>(time(nullptr)));
+		secretWord = getRandomWord();
+		currentWord = string(secretWord.length(),'_');
+		attemptsLeft = MAX_ATTEMPTS;
+	}
+	void play() {
+		cout << "Welcome to Hangman!" << endl;
+		cout << "Category: league champions" << endl;
+		cout << "You have " << attemptsLeft << " attempts to guess the correct champ." << endl;
+
+
+
+		while (attemptsLeft>0) {
+			displayGameInfo();
+			char guess;
+			cout << "guess a letter ho: ";
+			cin >> guess;
+
+			if (isalpha(guess)) {
+				guess = tolower(guess);
+				if (alreadyGuessed(guess)) {
+					cout << UNDERLINE << "already guessed that letter do u have alzheimer's or smth" << RESET << endl;
+				}
+				else {
+					bool correctGuess = updateCurrentWord(guess);
+					if (correctGuess) {
+						if (correctWord==0) {
+							cout << UNDERLINE << "gj very sigma of u" << RESET << endl;
+							correctWord++;
+						}
+						else if (correctWord==1) {
+							cout << UNDERLINE << "u're on fire "<< RESET << endl;
+							correctWord++;
+						}
+						else if (correctWord==2) {
+							cout << UNDERLINE << "damn go easy on me daddy:3"<< RESET << endl;
+							correctWord++;
+						}
+						else {
+							cout << UNDERLINE << "okay, u gotta chill, i get it...u have cancer"<< RESET <<endl;
+						}
+					}
+					if (currentWord==secretWord) {
+						cout << UNDERLINE << "yippie u did it! its: " << secretWord << RESET << endl;
+						return;
+					}
+				    else {
+					    drawHangman(attemptsLeft);
+					    attemptsLeft--;
+					    if (attemptsLeft == 5) {
+						   cout << UNDERLINE << "looser, ure such a noob even in this game" << RESET << endl;
+					       }
+					    else if (attemptsLeft == 4) {
+						   cout << UNDERLINE << "brooo still wrong, get better"<< RESET << endl;
+					    }
+					    else if (attemptsLeft == 3) {
+						   cout << UNDERLINE << "go play candycrush ho! still wrong" << RESET << endl;
+					     }
+					    else if (attemptsLeft == 2) {
+						    cout << UNDERLINE << "maybe u just arent smart enough" << RESET << endl;
+					     }
+					     else {
+					    	cout << UNDERLINE << "aghhh wrong again" << RESET << endl;
+					     }
+				    }
+				}    
+			}
+			else {
+				cout << UNDERLINE << "thats not a letter bitch" << RESET << endl;
+			}
+		}
+		if (attemptsLeft == 0) {
+			displayGameInfo();
+			cout << UNDERLINE << "HA! I KNEW U COULDNT DO IT! u just lost from the easiest champ: " << secretWord << endl;
+		}
+	}
+private:
+	string secretWord;
+	string currentWord;
+	int attemptsLeft;
+	int correctWord=0;
+	vector<char> guessedLetters;
+	string getRandomWord() {
+		vector<string> words  = { "malphite", "vayne", "kayle", "yone","draven", "hecarim", "ezreal", "katarina", "lucian", "samira", "diana", "morgana", "seraphin", "riven", "yasuo", "ekko", "warwick", "tryndamere", "viego", "milio", "garen", "darius", "nilah", "akali", "sion", "volibear" };
+		int index = rand() % words.size();
+		return words[index];
+	}
+	bool alreadyGuessed(char letter) {
+		return find(guessedLetters.begin(), guessedLetters.end(), letter)!= guessedLetters.end();
+	}
+	bool updateCurrentWord(char letter) {
+		bool correctGuess = false;
+		for (int i = 0; i < secretWord.length(); i++) {
+			if (secretWord[i] == letter) {
+				currentWord[i] = letter;
+				correctGuess = true;
+			}
+		}
+		guessedLetters.push_back(letter);
+		return correctGuess;
+	}
+	void displayGameInfo() {
+		cout << "Word: " << currentWord << endl;
+		cout << "Attempts left: " << attemptsLeft << endl;
+		for (char letter : guessedLetters) {
+			cout << letter << " ";
+		}
+		cout << endl;
+	}
+	void drawHangman(int attemptsLeft)
+	{
+		if (attemptsLeft == 5) {
+			cout << "   _____" << endl;
+			cout << "  |     |" << endl;
+			cout << "  |     O" << endl;
+			cout << "  |" << endl;
+			cout << "  |" << endl;
+			cout << "  |" << endl;
+			cout << "  |" << endl;
+		}
+		else if (attemptsLeft == 4) {
+			cout << "   _____" << endl;
+			cout << "  |     |" << endl;
+			cout << "  |     O" << endl;
+			cout << "  |     |" << endl;
+			cout << "  |" << endl;
+			cout << "  |" << endl;
+			cout << "  |" << endl;
+		}
+		else if (attemptsLeft == 3) {
+			cout << "   _____" << endl;
+			cout << "  |     |" << endl;
+			cout << "  |     O" << endl;
+			cout << "  |    /|" << endl;
+			cout << "  |" << endl;
+			cout << "  |" << endl;
+			cout << "  |" << endl;
+		}
+		else if (attemptsLeft == 2) {
+			cout << "   _____" << endl;
+			cout << "  |     |" << endl;
+			cout << "  |     O" << endl;
+			cout << "  |    /|\\" << endl;
+			cout << "  |" << endl;
+			cout << "  |" << endl;
+			cout << "  |" << endl;
+		}
+		else if (attemptsLeft == 1) {
+			cout << "   _____" << endl;
+			cout << "  |     |" << endl;
+			cout << "  |     O" << endl;
+			cout << "  |    /|\\" << endl;
+			cout << "  |    /" << endl;
+			cout << "  |" << endl;
+			cout << "  |" << endl;
+		}
+		else if (attemptsLeft == 0) {
+			cout << "   _____" << endl;
+			cout << "  |     |" << endl;
+			cout << "  |     O" << endl;
+			cout << "  |    /|\\" << endl;
+			cout << "  |    / \\" << endl;
+			cout << "  |" << endl;
+			cout << "  |" << endl;
+		}
+	}
+};
+
+
+int main()
+{
+	hangman_game game;
+	game.play();
+
+	return 0;
+}
